@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FaceChain — Task #3</title>
+<style>
+:root{--bg:#07110d;--panel:#0d1b15;--panel2:#10251b;--text:#eff9f2;--muted:#8da99b;--accent:#d2ff57;--cyan:#63f4be;--line:#214333;--danger:#ff7180}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#1a4a32,transparent 35%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}.wrap{width:min(1100px,92vw);margin:auto}.top{padding:24px 0;display:flex;justify-content:space-between}.brand{font-size:25px;font-weight:800}.brand span{color:var(--accent)}.pill,.tag{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:11px}.hero{padding:42px 0 22px}.eyebrow{color:var(--accent);font-size:12px;letter-spacing:.18em}.hero h1{font-size:clamp(45px,8vw,82px);line-height:.9;margin:12px 0}.hero p{max-width:780px;color:var(--muted);font-size:17px;line-height:1.55}.grid{display:grid;grid-template-columns:360px 1fr;gap:18px;padding:20px 0 60px}.panel{background:rgba(10,27,19,.92);border:1px solid var(--line);border-radius:22px;padding:20px}.panel h2{margin:0 0 6px}.sub,.small{color:var(--muted);font-size:13px;line-height:1.5}.drop{position:relative;min-height:240px;border:1px dashed #416b54;border-radius:17px;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;cursor:pointer;background:rgba(25,57,42,.35);margin:16px 0;overflow:hidden}.drop.drag{border-color:var(--accent);background:rgba(40,80,55,.5)}.file-real{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:5}.drop-content{pointer-events:none;z-index:2;width:100%}.preview{max-width:100%;max-height:230px;border-radius:13px;display:block;margin:auto}.consent{display:flex;gap:8px;font-size:12px;color:var(--muted);line-height:1.4}.btn{border:0;border-radius:13px;padding:13px 15px;background:var(--accent);color:#07110d;font-weight:800;cursor:pointer}.btn:disabled{opacity:.4;cursor:not-allowed}.full{width:100%;margin-top:13px}.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}.stages{display:grid;gap:9px}.stage{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:15px}.num{font-weight:800;color:var(--accent)}.stage b{display:block}.stage small{display:block;color:var(--muted);margin-top:4px}.status{font-size:10px;color:var(--muted)}.stage.active{border-color:var(--accent)}.stage.done{border-color:#3c7456}.stage.done .status{color:var(--cyan)}.card{border:1px solid var(--line);border-radius:16px;padding:15px;background:var(--panel2);margin-top:12px}.hash{font-family:monospace;font-size:11px;word-break:break-all;color:var(--muted);line-height:1.65}.input{width:100%;padding:12px;border:1px solid var(--line);background:#07150e;color:var(--text);border-radius:10px;margin:8px 0 0}.notice,.error,.success{padding:12px;border-radius:12px;font-size:12px;line-height:1.5;margin-top:12px}.notice{background:#12251b;color:var(--muted)}.error{background:#3a161d;border:1px solid #71303a;color:#ffb0b7}.success{background:#102f20;border:1px solid #2d6848;color:#b9ffdd}.match{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;border-top:1px solid var(--line);padding:12px 0}.thumb{width:72px;height:54px;object-fit:cover;border-radius:8px;background:#07150e}.match a{color:var(--accent);word-break:break-all}.score{font-size:11px;color:var(--cyan)}.footer{padding:20px 0 50px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between}@media(max-width:800px){.grid{grid-template-columns:1fr}.footer{display:block}.tag{display:inline-block;margin-top:10px}}
+</style>
+</head>
+<body><div class="wrap">
+<header class="top"><div class="brand">FACE<span>CHAIN</span></div><div class="pill">HH GOA · TASK #3</div></header>
+<section class="hero"><div class="eyebrow">FACE ID + BLOCKCHAIN VERIFICATION</div><h1>Evidence,<br><span style="color:var(--accent)">not identity.</span></h1><p>Upload an image, create SHA-256 evidence fingerprints, perform a genuine Google Lens search through SerpApi, review the returned source, and optionally anchor the evidence record on Polygon Amoy.</p></section>
+<main class="grid">
+<section class="panel"><h2>1 · Evidence input</h2><p class="sub">This upload control is a real HTML file input layered over the drop area, so it works without a JavaScript-triggered hidden input.</p>
+<div class="drop" id="drop">
+<input id="file" class="file-real" type="file" accept="image/*">
+<div id="dropText" class="drop-content"><div style="font-size:42px">⌁</div><b>Tap here to choose an image</b><div class="small">or drag & drop · JPG / PNG / WebP · up to 5 MB</div><div class="btn secondary" style="display:inline-block;margin-top:12px">CHOOSE IMAGE</div></div>
+</div>
+<label class="consent"><input id="consent" type="checkbox"> <span>I have permission to process this image. This demo verifies image/source evidence and does not identify an unknown person.</span></label>
+<button class="btn full" id="analyze" disabled>ANALYZE WITH SERPAPI</button><div id="error"></div><div id="analysis" class="notice" style="display:none"></div>
+</section>
+<section class="panel"><h2>2 · Live verification pipeline</h2><p class="sub">SerpApi receives a compressed copy for Google Lens. The API key is used only by the server.</p>
+<div class="stages"><div class="stage" data-s="1"><div class="num">01</div><div><b>Image selected</b><small>Browser receives the local image.</small></div><div class="status">WAITING</div></div>
+<div class="stage" data-s="2"><div class="num">02</div><div><b>Cryptographic encoding</b><small>SHA-256 image + face-region commitment.</small></div><div class="status">WAITING</div></div>
+<div class="stage" data-s="3"><div class="num">03</div><div><b>SerpApi → Google Lens</b><small>Real reverse-image search.</small></div><div class="status">WAITING</div></div>
+<div class="stage" data-s="4"><div class="num">04</div><div><b>Evidence scoring</b><small>Review real returned source URLs.</small></div><div class="status">WAITING</div></div>
+<div class="stage" data-s="5"><div class="num">05</div><div><b>Blockchain anchor</b><small>Optional Polygon Amoy record.</small></div><div class="status">WAITING</div></div></div><div id="results"></div></section>
+</main><footer class="footer"><span>FaceChain · Hacker House Goa Task #3</span><span><span class="tag">SERPAPI</span><span class="tag">SHA-256</span><span class="tag">POLYGON AMOY</span></span></footer></div>
+<script>
+const $=id=>document.getElementById(id);
+const file=$('file'),drop=$('drop'),consent=$('consent'),analyze=$('analyze'),dropText=$('dropText'),error=$('error'),analysis=$('analysis'),results=$('results');
+let selected=null,faceBox=null,state=null,previewUrl=null;
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function setStage(n,done=false){document.querySelectorAll('.stage').forEach(x=>{const i=+x.dataset.s;x.classList.toggle('done',done&&i<=n);x.classList.toggle('active',!done&&i===n);x.querySelector('.status').textContent=i<n?'DONE':i===n?(done?'DONE':'RUNNING'):'WAITING'})}
+function choose(f){
+ if(!f)return;
+ const type=f.type.toLowerCase();
+ if(!type.startsWith('image/')||f.size>5*1024*1024){error.innerHTML='<div class="error">Please choose a JPG, PNG, or WebP image under 5 MB.</div>';return}
+ selected=f;state=null;faceBox=null;results.innerHTML='';analysis.style.display='none';setStage(1,true);
+ if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(f);
+ dropText.innerHTML=`<img class="preview" src="${previewUrl}" alt="Selected image"><div class="small" style="margin-top:8px"><b>${esc(f.name)}</b> · ${(f.size/1024).toFixed(0)} KB</div><div class="small">Image selected successfully. You can analyze now.</div>`;
+ analyze.disabled=!consent.checked;
+ error.innerHTML='<div class="success">✓ Image uploaded into the browser. Ready to analyze.</div>';
+}
+file.addEventListener('change',e=>{choose(e.target.files[0]);e.target.value=''});
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');choose(e.dataTransfer.files[0])});
+consent.addEventListener('change',()=>{analyze.disabled=!(selected&&consent.checked)});
+function compressForSerpApi(f){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{const max=1600,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);let q=.82;const loop=()=>c.toBlob(b=>{if(!b)return reject(new Error('Could not compress image.'));if(b.size<=480*1024||q<=.45)return resolve(new File([b],'facechain-search.jpg',{type:'image/jpeg'}));q-=.07;loop()},'image/jpeg',q);loop()};img.onerror=()=>reject(new Error('Could not read image.'));img.src=URL.createObjectURL(f)})}
+async function run(){
+ if(!selected||!consent.checked)return;
+ analyze.disabled=true;error.innerHTML='';results.innerHTML='';setStage(1,true);setStage(2);
+ try{
+  const searchFile=await compressForSerpApi(selected); const fd=new FormData(); fd.append('image',searchFile); setStage(3);
+  const r=await fetch('/api/analyze',{method:'POST',body:fd});
+  let d={}; try{d=await r.json()}catch{}
+  if(!r.ok)throw new Error(d.error||`Server returned HTTP ${r.status}`);
+  state=d;setStage(3,true);setStage(4);
+  analysis.style.display='block';analysis.innerHTML=`<b>${d.detection?.faceDetected?'FACE REGION PROVIDED':'IMAGE EVIDENCE MODE'}</b><br>Image SHA-256: <code>${esc(d.privacy?.imageHash)}</code><br>SerpApi matches: ${d.search?.matchesFound??0} · Social matches: ${d.search?.socialMatchesFound??0}`;
+  renderMatches(d);setStage(4,true);showAnchorForm();
+ }catch(e){error.innerHTML=`<div class="error">${esc(e.message)}<br><span class="small">If the message mentions /api/analyze, make sure you opened <b>http://localhost:3000</b> after starting the Node server.</span></div>`;setStage(2,true)}
+ finally{analyze.disabled=!(selected&&consent.checked)}
+}
+analyze.addEventListener('click',run);
+function renderMatches(d){const ms=d.search?.matches||[],best=d.search?.bestMatch;let html='<div class="card"><h3 style="margin:0 0 6px">3 · Genuine Google Lens evidence</h3><p class="small">Review these real URLs before using one as evidence. A match is evidence about an image/source, not proof of a person’s identity.</p>';if(best)html+=`<div class="success"><b>Suggested source:</b> ${esc(best.domain||best.source)} · ${best.evidenceScore}% evidence score<br><a href="${esc(best.url)}" target="_blank" rel="noopener">${esc(best.url)}</a></div>`;if(!ms.length)html+='<div class="notice">No matches returned. Try a clearer or less-cropped image.</div>';ms.slice(0,10).forEach(m=>{html+=`<div class="match">${m.thumbnail?`<img class="thumb" src="${esc(m.thumbnail)}" onerror="this.style.display='none'">`:'<div class="thumb"></div>'}<div><b>${esc(m.title||m.source||m.domain)}</b><div class="score">${esc(m.type)} · ${m.evidenceScore}%</div><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.url)}</a></div></div>`});html+='</div>';results.innerHTML=html}
+function showAnchorForm(){results.innerHTML+=`<div class="card"><h3 style="margin:0 0 6px">4–5 · Verify & anchor evidence</h3><p class="small">Paste a real source URL from the results. Polygon anchoring is optional.</p><input class="input" id="source" placeholder="Paste source URL" value="${esc(state?.evidence?.sourceUrl||'')}"><input class="input" id="score" type="number" min="0" max="100" value="${esc(state?.evidence?.score||0)}"><button class="btn full" id="save">VERIFY URL + PREPARE BLOCKCHAIN RECORD</button><div id="anchorOut"></div></div>`;$('save').onclick=prepareAnchor}
+async function prepareAnchor(){const u=$('source').value.trim(),score=Number($('score').value);if(!/^https?:\/\//i.test(u))return $('anchorOut').innerHTML='<div class="error">Enter a valid http(s) source URL.</div>';setStage(5);try{const r=await fetch('/api/anchor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({imageHash:state.privacy.imageHash,faceDigest:state.privacy.faceDigest,sourceUrl:u,score})});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.error||'Anchor failed');setStage(5,true);$('anchorOut').innerHTML=`<div class="success"><b>${d.chain?.status==='anchored'?'BLOCKCHAIN ANCHORED':'RECORD READY · DEMO MODE'}</b><br>${esc(d.source?.domain)} · ${esc(d.source?.score)}% evidence score<br>${d.chain?.txHash?`TX: <a href="${esc(d.chain.explorerUrl)}" target="_blank" rel="noopener">${esc(d.chain.txHash)}</a>`:'Add Polygon Amoy wallet + contract credentials in .env to write the record on-chain.'}</div><div class="hash" style="margin-top:10px">RECORD ID · ${esc(d.chain?.recordId)}<br>SOURCE · ${esc(d.source?.url)}</div>`}catch(e){$('anchorOut').innerHTML=`<div class="error">${esc(e.message)}</div>`}}
+</script></body></html>
